@@ -1,7 +1,14 @@
 import { vi } from 'vitest'
+import { config } from '@vue/test-utils'
 
-// Mock crypto for tests
+// Mock crypto
 const crypto = {
-  getRandomValues: (arr: Uint8Array) => arr.map(() => Math.floor(Math.random() * 256))
+  getRandomValues: () => new Uint32Array(10)
 }
-vi.stubGlobal('crypto', crypto) 
+vi.stubGlobal('crypto', crypto)
+
+// Configure Vue Test Utils
+config.global.stubs = {
+  'router-view': true,
+  'router-link': true
+} 

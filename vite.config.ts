@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
-import type { UserConfig } from 'vitest/config'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,11 +11,12 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true,
     environment: 'jsdom',
+    globals: true,
     setupFiles: ['./vitest.setup.ts'],
     deps: {
-      inline: ['@vue']
-    }
+      inline: [/vue-router/, '@vue', 'vue']
+    },
+    threads: false
   }
-} as UserConfig) 
+}) 
