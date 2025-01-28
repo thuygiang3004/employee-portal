@@ -47,10 +47,14 @@
               required
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              <option value="" class="text-gray-500">Select a manager</option>
-              <option value="john">John Smith</option>
-              <option value="jane">Jane Doe</option>
-              <option value="bob">Bob Wilson</option>
+              <option value="">Select a manager</option>
+              <option 
+                v-for="manager in managers" 
+                :key="manager.id" 
+                :value="manager.id"
+              >
+                {{ manager.first_name }} {{ manager.last_name }}
+              </option>
             </select>
           </div>
 
@@ -77,16 +81,41 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useUser } from '../composables/useUser'
+import axios from 'axios'
+
+interface Manager {
+  id: number
+  first_name: string
+  last_name: string
+}
 
 const { setUser, error } = useUser()
+const managers = ref<Manager[]>([])
+const loadingManagers = ref(false)
 
 const formData = reactive({
   from: '',
   to: '',
   reason: '',
   manager: ''
+})
+
+const fetchManagers = async () => {
+  try {
+    loadingManagers.value = true
+    const response = await axios.get('http://127.0.0.1:8000/api/managers')
+    managers.value = response.data
+  } catch (err) {
+    console.error('Failed to fetch managers:', err)
+  } finally {
+    loadingManagers.value = false
+  }
+}
+
+onMounted(() => {
+  fetchManagers()
 })
 
 const handleSubmit = () => {
