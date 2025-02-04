@@ -1,16 +1,7 @@
 import {describe, expect, it, vi} from 'vitest'
 import {flushPromises, mount} from '@vue/test-utils'
 import NewRequest from '../NewRequest.vue'
-import {nextTick} from "vue";
 
-// const mockManagers = [
-//     {id: 1, first_name: 'John', last_name: 'Doe'},
-//     {id: 2, first_name: 'Jane', last_name: 'Smith'},
-// ]
-//
-// const mocks = vi.hoisted(() => ({
-//   managers: mockManagers
-// }))
 vi.mock('axios', () => ({
     default: {
         get: vi.fn().mockReturnValue({
