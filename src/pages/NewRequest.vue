@@ -81,11 +81,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { useUser } from '../composables/useUser'
+import {onMounted, reactive, ref} from 'vue'
+import {useUser} from '../composables/useUser'
 import axios from 'axios'
-import { z } from 'zod'
-import { ManagerSchema, type Manager } from '../types/manager'
+import {z} from 'zod'
+import {type Manager, ManagerSchema} from '../types/manager'
 
 const { setUser, error } = useUser()
 const managers = ref<Manager[]>([])
@@ -102,8 +102,7 @@ const fetchManagers = async () => {
   try {
     loadingManagers.value = true
     const response = await axios.get('http://127.0.0.1:8000/api/managers')
-    const validatedManagers = z.array(ManagerSchema).parse(response.data)
-    managers.value = validatedManagers
+    managers.value = z.array(ManagerSchema).parse(response.data)
   } catch (err) {
     console.error('Failed to fetch managers:', err)
   } finally {
@@ -124,11 +123,4 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
-/* .form-group {
-  margin-bottom: 1rem;
-}
-
-.error {
-  color: red;
-} */
 </style> 
