@@ -54,9 +54,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref} from "vue";
 import axios from "axios";
-import { z } from "zod";
+import {z} from "zod";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 // Define form state
 const form = ref({
@@ -91,10 +94,11 @@ const onSubmit = async () => {
   isSubmitting.value = true;
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/users/login', form.value);
-    console.log(response.data)
+    localStorage.setItem('email', JSON.stringify(response.data.name))
+    localStorage.setItem('token', JSON.stringify(response.data.email))
+    localStorage.setItem('userName', JSON.stringify(response.data.token))
 
-    console.log("Login successful:", response.data);
-    // Handle successful login (e.g., redirect, store token)
+    router.push('/new-request')
   } catch (error: any) {
     console.log(error)
     errorMessage.value = error.response?.data?.message || "Login failed. Please try again.";
