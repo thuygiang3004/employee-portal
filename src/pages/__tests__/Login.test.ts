@@ -52,9 +52,9 @@ describe('LoginForm', () => {
         });
     });
 
-    it.skip('shows error message when login fails', async () => {
-        axios.post.mockReturnValue({
-            data: {message: 'Invalid credentials'},
+    it('shows error message when login fails', async () => {
+        axios.post.mockRejectedValue({
+            response: {data: {message: 'Invalid credentials'}},
         });
 
         const wrapper = mount(Login);
@@ -69,8 +69,8 @@ describe('LoginForm', () => {
         expect(wrapper.find('.text-red-500').text()).toContain('Invalid credentials');
     });
 
-    it.skip('shows generic error message when login request fails unexpectedly', async () => {
-        axios.post.mockReturnValue(new Error('Network Error'));
+    it('shows generic error message when login request fails unexpectedly', async () => {
+        axios.post.mockRejectedValue(new Error('Network Error'));
 
         const wrapper = mount(Login);
 

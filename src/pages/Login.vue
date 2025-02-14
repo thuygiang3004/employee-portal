@@ -96,6 +96,7 @@ const onSubmit = async () => {
     console.log("Login successful:", response.data);
     // Handle successful login (e.g., redirect, store token)
   } catch (error: any) {
+    console.log(error)
     errorMessage.value = error.response?.data?.message || "Login failed. Please try again.";
   } finally {
     isSubmitting.value = false;
