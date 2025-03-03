@@ -101,7 +101,10 @@ const formData = reactive({
 const fetchManagers = async () => {
   try {
     loadingManagers.value = true
-    const response = await axios.get('http://127.0.0.1:8000/api/managers')
+    const token = JSON.parse(localStorage.getItem('token') ?? '')
+    const response = await axios.get('http://127.0.0.1:8000/api/managers', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     managers.value = z.array(ManagerSchema).parse(response.data)
   } catch (err) {
     console.error('Failed to fetch managers:', err)

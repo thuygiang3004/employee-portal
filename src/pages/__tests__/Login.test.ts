@@ -83,4 +83,43 @@ describe('LoginForm', () => {
         expect(wrapper.find('.text-red-500').exists()).toBe(true);
         expect(wrapper.find('.text-red-500').text()).toContain('Login failed. Please try again.');
     });
+
+    it('stores login information in localStorage when login is successful', async () => {
+        // Mock successful login response
+        const mockResponse = {
+            data: {
+                name: 'Test User',
+                email: 'test@example.com',
+                token: 'test-token'
+            }
+        };
+        axios.post.mockResolvedValue(mockResponse);
+
+        // Mock localStorage
+        const localStorageMock = {
+            store: {} as Record<string, string>,
+            setItem: vi.fn((key, value) => {
+                localStorageMock.store[key] = value;
+            }),
+            getItem: vi.fn((key) => localStorageMock.store[key]),
+        };
+        Object.defineProperty(window, 'localStorage', {
+            value: localStorageMock,
+            writable: true
+        });
+
+        const wrapper = mount(Login);
+
+        // Fill in and submit the form
+        await wrapper.find('#email').setValue('test@example.com');
+        await wrapper.find('#password').setValue('password123');
+        await wrapper.find('form').trigger('submit');
+
+        await flushPromises();
+
+        // Verify localStorage calls
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('email', JSON.stringify(mockResponse.data.name));
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', JSON.stringify(mockResponse.data.email));
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('userName', JSON.stringify(mockResponse.data.token));
+    });
 });
