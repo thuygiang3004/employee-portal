@@ -43,7 +43,7 @@
             <label for="manager" class="block text-sm font-medium text-gray-700">Manager</label>
             <select 
               id="manager" 
-              v-model="formData.manager" 
+              v-model="formData.managerId"
               required
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
@@ -82,12 +82,12 @@
 
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
-import {useUser} from '../composables/useUser'
 import axios from 'axios'
 import {z} from 'zod'
 import {type Manager, ManagerSchema} from '../types/manager'
 
-const { setUser, error } = useUser()
+const error = ref('');
+const isSubmitting = ref(false)
 const managers = ref<Manager[]>([])
 const loadingManagers = ref(false)
 
@@ -95,7 +95,7 @@ const formData = reactive({
   from: '',
   to: '',
   reason: '',
-  manager: ''
+  managerId: ''
 })
 
 const fetchManagers = async () => {
@@ -117,10 +117,13 @@ onMounted(() => {
   fetchManagers()
 })
 
-const handleSubmit = () => {
-  setUser({
-    id: Math.random(),
-    ...formData
+const handleSubmit = async () => {
+  console.log(formData)
+  isSubmitting.value = true
+  const token = JSON.parse(localStorage.getItem('token') ?? '')
+  // TODO: wait to create backend api
+  const response = await axios.post('http://127.0.0.1:8000/api/managers', {
+    headers: { Authorization: `Bearer ${token}` }
   })
 }
 </script>
