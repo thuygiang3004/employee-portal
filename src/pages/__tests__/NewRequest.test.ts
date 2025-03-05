@@ -7,7 +7,7 @@ vi.mock('axios', () => ({
         get: vi.fn().mockReturnValue({
             data: [
                 {id: 1, first_name: 'John', last_name: 'Doe'},
-                {id: 2, first_name: 'Jane', last_name: 'Smith',},
+                {id: 2, first_name: 'Jane', last_name: 'Smith'},
             ],
         }),
     },
@@ -33,8 +33,9 @@ describe('NewRequest', () => {
 
         await wrapper.find('form').trigger('submit')
 
-        // expect(wrapper.find('.error').exists()).toBe(false)
+        expect(wrapper.find('.error').exists()).toBe(false)
     })
+
     it('fetches managers on mount', async () => {
         localStorage.setItem('token', 'my-token')
         const wrapper = mount(NewRequest)
@@ -44,4 +45,6 @@ describe('NewRequest', () => {
         expect(options[1].text()).toBe('John Doe')
         expect(options[2].text()).toBe('Jane Smith')
     })
+
+//     TODO: Test submit successfully
 }) 
