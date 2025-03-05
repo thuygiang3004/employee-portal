@@ -94,9 +94,9 @@ const onSubmit = async () => {
   isSubmitting.value = true;
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/users/login', form.value);
-    localStorage.setItem('email', JSON.stringify(response.data.email))
-    localStorage.setItem('token', JSON.stringify(response.data.token))
-    localStorage.setItem('userName', JSON.stringify(response.data.name))
+    localStorage.setItem('email', response.data.email)
+    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('userName', response.data.name)
 
     router.push('/new-request')
   } catch (error: any) {

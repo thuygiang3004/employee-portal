@@ -46,7 +46,7 @@ describe('LoginForm', () => {
 
         await wrapper.find('form').trigger('submit');
 
-        expect(axios.post).toHaveBeenCalledWith('/api/login', {
+        expect(axios.post).toHaveBeenCalledWith('http://127.0.0.1:8000/api/users/login', {
             email: 'test@example.com',
             password: 'password123',
         });
@@ -118,8 +118,8 @@ describe('LoginForm', () => {
         await flushPromises();
 
         // Verify localStorage calls
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('email', JSON.stringify(mockResponse.data.name));
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', JSON.stringify(mockResponse.data.email));
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('userName', JSON.stringify(mockResponse.data.token));
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('email', mockResponse.data.email);
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockResponse.data.token);
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('userName', mockResponse.data.name);
     });
 });

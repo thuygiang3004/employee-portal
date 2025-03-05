@@ -106,10 +106,11 @@ const formData = ref({
 const fetchManagers = async () => {
   try {
     loadingManagers.value = true
-    const token = JSON.parse(localStorage.getItem('token') ?? '')
+    const token = localStorage.getItem('token')
     const response = await axios.get('http://127.0.0.1:8000/api/managers', {
       headers: {Authorization: `Bearer ${token}`},
     })
+    console.log(response.data)
     managers.value = z.array(ManagerSchema).parse(response.data)
   } catch (err) {
     console.error('Failed to fetch managers:', err)
@@ -124,7 +125,7 @@ onMounted(() => {
 
 const handleSubmit = async () => {
   isSubmitting.value = true
-  const token = JSON.parse(localStorage.getItem('token') ?? '')
+  const token = localStorage.getItem('token')
   const response = await axios.post('http://127.0.0.1:8000/api/requests/create', {...formData.value}, {
     headers: {Authorization: `Bearer ${token}`},
   })

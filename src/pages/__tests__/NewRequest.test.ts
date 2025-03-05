@@ -36,6 +36,7 @@ describe('NewRequest', () => {
         // expect(wrapper.find('.error').exists()).toBe(false)
     })
     it('fetches managers on mount', async () => {
+        localStorage.setItem('token', 'my-token')
         const wrapper = mount(NewRequest)
         await flushPromises()
         const options = wrapper.findAll('select#manager option')
