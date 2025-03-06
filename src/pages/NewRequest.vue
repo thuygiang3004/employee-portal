@@ -87,6 +87,7 @@ import axios from 'axios'
 import {z} from 'zod'
 import {type Manager, ManagerSchema} from '../types/manager'
 import {useRouter} from "vue-router";
+import {getRequest, postRequest} from "@/services/httpServices.ts";
 
 const router = useRouter()
 
@@ -106,11 +107,7 @@ const formData = ref({
 const fetchManagers = async () => {
   try {
     loadingManagers.value = true
-    const token = localStorage.getItem('token')
-    const response = await axios.get('http://127.0.0.1:8000/api/managers', {
-      headers: {Authorization: `Bearer ${token}`},
-    })
-    console.log(response.data)
+    const response = await getRequest('managers')
     managers.value = z.array(ManagerSchema).parse(response.data)
   } catch (err) {
     console.error('Failed to fetch managers:', err)
@@ -125,10 +122,7 @@ onMounted(() => {
 
 const handleSubmit = async () => {
   isSubmitting.value = true
-  const token = localStorage.getItem('token')
-  const response = await axios.post('http://127.0.0.1:8000/api/requests/create', {...formData.value}, {
-    headers: {Authorization: `Bearer ${token}`},
-  })
+  const response = await postRequest('requests/create', {...formData.value})
 
   if (response.status == 201) {
     formData.value = {

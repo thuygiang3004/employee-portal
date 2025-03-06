@@ -58,6 +58,7 @@ import {ref} from "vue";
 import axios from "axios";
 import {z} from "zod";
 import {useRouter} from "vue-router";
+import {postRequest} from "@/services/httpServices.ts";
 
 const router = useRouter();
 
@@ -87,13 +88,14 @@ const onSubmit = async () => {
   const result = schema.safeParse(form.value);
   if (!result.success) {
     // Extract and display validation errors
+    // TODO: Remove [""] in the error message
     errors.value = result.error.flatten().fieldErrors as { email?: string; password?: string };
     return;
   }
 
   isSubmitting.value = true;
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/users/login', form.value);
+    const response = await postRequest('users/login', form.value)
     localStorage.setItem('email', response.data.email)
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('userName', response.data.name)
