@@ -134,7 +134,7 @@ const handleSubmit = async () => {
     formData.value = defaultFormValue
     message.value = response.data.message
     // TODO: Update to go to dashboard
-    router.push('/')
+    router.push('/calendar')
   }
 }
 </script>

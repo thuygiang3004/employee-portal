@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NewRequest from '../pages/NewRequest.vue'
 import Login from "@/pages/Login.vue";
+import Calendar from "@/pages/Calendar.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,6 +19,10 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/new-request'
+    },
+    {
+      path: '/calendar',
+      component: Calendar
     }
   ]
 })
