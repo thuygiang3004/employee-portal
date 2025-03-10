@@ -55,7 +55,6 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-import axios from "axios";
 import {z} from "zod";
 import {useRouter} from "vue-router";
 import {postRequest} from "@/services/httpServices.ts";

@@ -8,7 +8,7 @@
           <div>
             <label for="from" class="block text-sm font-medium text-gray-700">From</label>
             <input
-                type="date"
+                type="datetime-local"
                 id="from"
                 v-model="formData.from"
                 required
@@ -19,7 +19,7 @@
           <div>
             <label for="to" class="block text-sm font-medium text-gray-700">To</label>
             <input
-                type="date"
+                type="datetime-local"
                 id="to"
                 v-model="formData.to"
                 required
@@ -83,11 +83,20 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
-import axios from 'axios'
 import {z} from 'zod'
 import {type Manager, ManagerSchema} from '../types/manager'
 import {useRouter} from "vue-router";
 import {getRequest, postRequest} from "@/services/httpServices.ts";
+import dayjs from "dayjs";
+
+const tomorrow = dayjs().add(1, 'day').startOf('day')
+
+const defaultFormValue = {
+  from: tomorrow.hour(9).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
+  to: tomorrow.hour(17).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
+  reason: '',
+  managerId: '',
+};
 
 const router = useRouter()
 
@@ -97,12 +106,7 @@ const isSubmitting = ref(false)
 const managers = ref<Manager[]>([])
 const loadingManagers = ref(false)
 
-const formData = ref({
-  from: '',
-  to: '',
-  reason: '',
-  managerId: '',
-})
+const formData = ref(defaultFormValue)
 
 const fetchManagers = async () => {
   try {
@@ -117,20 +121,17 @@ const fetchManagers = async () => {
 }
 
 onMounted(() => {
+  console.log((new Date()).toISOString())
   fetchManagers()
 })
 
 const handleSubmit = async () => {
+  console.log(formData.value)
   isSubmitting.value = true
   const response = await postRequest('requests/create', {...formData.value})
 
   if (response.status == 201) {
-    formData.value = {
-      from: '',
-      to: '',
-      reason: '',
-      managerId: '',
-    }
+    formData.value = defaultFormValue
     message.value = response.data.message
     // TODO: Update to go to dashboard
     router.push('/')
