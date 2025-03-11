@@ -106,7 +106,7 @@ const isSubmitting = ref(false)
 const managers = ref<Manager[]>([])
 const loadingManagers = ref(false)
 
-const formData = ref(defaultFormValue)
+const formData = ref({...defaultFormValue})
 
 const fetchManagers = async () => {
   try {
@@ -131,10 +131,10 @@ const handleSubmit = async () => {
   const response = await postRequest('requests/create', {...formData.value})
 
   if (response.status == 201) {
-    formData.value = defaultFormValue
+    formData.value = {...defaultFormValue}
     message.value = response.data.message
     // TODO: Update to go to dashboard
-    router.push('/calendar')
+    // router.push('/calendar')
   }
 }
 </script>
