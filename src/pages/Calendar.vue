@@ -1,19 +1,16 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-2xl mx-auto bg-white p-6 shadow rounded-lg">
-      <h2 class="mb-6 text-2xl font-bold text-gray-900">Select a Date</h2>
-
-      <DatePicker v-model="date" :attributes="events" is-expanded>
+  <div class="my-calendar">
+      <DatePicker v-model="date" :attributes="events" expanded>
         <template #day-content="{ day, attributes }">
-          <div class="relative">
-            <span>{{ day.day }}</span>
-            <div v-for="attr in attributes" :key="attr.key" class="text-xs text-center mt-1 text-blue-600">
+          <div class="flex flex-col items-center">
+            <span class="text-sm font-medium mb-4">{{ day.day }}</span>
+            <span v-for="attr in attributes" :key="attr.key"
+                  class="-bottom-4 text-xs text-blue-600 whitespace-nowrap">
               {{ attr.customData?.description }}
-            </div>
+            </span>
           </div>
         </template>
       </DatePicker>
-    </div>
   </div>
 </template>
 
@@ -34,20 +31,32 @@ const events = ref([
       fillMode: 'solid',
     },
     dates: [dayjs().toDate()],
-    customData: { description: 'Meeting' },
+    customData: { description: 'User 1: Vacation' },
   },
   {
     key: 'event-2',
+    highlight: {
+      color: 'blue',
+      fillMode: 'solid',
+    },
+    dates: [dayjs().toDate()],
+    customData: { description: 'User 2: Vacation' },
+  },
+  {
+    key: 'event-3',
     highlight: {
       color: 'red',
       fillMode: 'outline',
     },
     dates: [dayjs().add(3, 'day').toDate()],
-    customData: { description: 'Project Deadline' },
+    customData: { description: 'User 3 Sick leave' },
   }
 ]);
 
 </script>
 
 <style scoped>
+.my-calendar :deep(.vc-week) {
+  margin-bottom: 6rem;
+}
 </style>
