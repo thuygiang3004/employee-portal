@@ -3,9 +3,9 @@
       <DatePicker v-model="date" :attributes="events" expanded>
         <template #day-content="{ day, attributes }">
           <div class="flex flex-col items-center">
-            <span class="text-sm font-medium mb-4">{{ day.day }}</span>
+            <span class="text-sm font-medium">{{ day.day }}</span>
             <span v-for="attr in attributes" :key="attr.key"
-                  class="-bottom-4 text-xs text-blue-600 whitespace-nowrap">
+                  class="text-xs text-blue-600 whitespace-nowrap">
               {{ attr.customData?.description }}
             </span>
           </div>
@@ -28,9 +28,11 @@ const events = ref([
     key: 'event-1',
     highlight: {
       color: 'blue',
-      fillMode: 'solid',
+      fillMode: 'light',
     },
-    dates: [dayjs().toDate()],
+    dates: [
+      [new Date(2025, 2, 7), new Date(2025, 2, 9)],
+    ],
     customData: { description: 'User 1: Vacation' },
   },
   {
