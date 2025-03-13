@@ -1,16 +1,16 @@
 <template>
   <div class="my-calendar">
-      <DatePicker v-model="date" :attributes="events" expanded>
-        <template #day-content="{ day, attributes }">
-          <div class="flex flex-col items-center">
-            <span class="text-sm font-medium">{{ day.day }}</span>
-            <span v-for="attr in attributes" :key="attr.key"
-                  class="text-xs text-blue-600 whitespace-nowrap">
+    <DatePicker v-model="date" :attributes="events" expanded>
+      <template #day-content="{ day, attributes }">
+        <div class="flex flex-col items-center">
+          <span class="text-sm font-medium">{{ day.day }}</span>
+          <span v-for="attr in filteredAttributes(day, attributes)" :key="attr.key"
+                class="text-xs text-blue-600 whitespace-nowrap">
               {{ attr.customData?.description }}
             </span>
-          </div>
-        </template>
-      </DatePicker>
+        </div>
+      </template>
+    </DatePicker>
   </div>
 </template>
 
@@ -55,6 +55,15 @@ const events = ref([
   }
 ]);
 
+const filteredAttributes = (day: any, attributes: any) => {
+  return attributes.filter((attr: any) => {
+    if (Array.isArray(attr.dates)) {
+      const firstDay = Array.isArray(attr.dates[0]) ? attr.dates[0][0] : attr.dates[0];
+      return dayjs(day.date).isSame(firstDay, 'day');
+    }
+    return true;
+  });
+};
 </script>
 
 <style scoped>
