@@ -30,11 +30,10 @@ const events = ref<any[]>([])
 
 
 const transformEvents = (dataEvents: any) => {
-  // TODO: Fix date miss match
   events.value = dataEvents.map((item: any) => {
     return {
       key: `event-${item.id}`,
-      dates: [[new Date(item.from), new Date(item.to)]],
+      dates: [[dayjs(item.from), dayjs(item.to)]],
       customData: {
         description: `${item.first_name} ${item.last_name}: ${item.reason}`,
       },
@@ -108,11 +107,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.my-calendar :deep(.vc-week) {
-  margin-bottom: 6rem;
-}
-
-.my-calendar :deep(.vc-day-layer) {
-  //display: none;
-}
+  .my-calendar :deep(.vc-week) {
+    margin-bottom: 6rem;
+  }
 </style>
