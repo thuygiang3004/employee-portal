@@ -3,11 +3,11 @@
     <DatePicker v-model="date" :attributes="events" expanded>
       <template #day-content="{ day, attributes }">
         <div class="flex flex-col items-center">
-          <span class="text-sm font-medium">{{ day.day }}</span>
-          <span v-for="attr in filteredAttributes(day, attributes)" :key="attr.key"
-                class="text-xs text-blue-600 whitespace-nowrap">
+          <div class="text-sm font-medium mb-2">{{ day.day }}</div>
+          <div v-for="attr in filteredAttributes(day, attributes)" :key="attr.key"
+                class="text-xs text-blue-600 whitespace-nowrap w-full mb-1 bg-blue-200" :class="attr.styles">
               {{ attr.customData?.description }}
-            </span>
+          </div>
         </div>
       </template>
     </DatePicker>
@@ -15,21 +15,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { DatePicker } from 'v-calendar';
+import {ref} from 'vue';
+import {DatePicker} from 'v-calendar';
 import 'v-calendar/style.css';
 import dayjs from 'dayjs';
 
 const date = ref(new Date());
+const loadingEvents = ref(false)
+
+// const events = ref<Event[] | null>([])
 
 // Sample events with descriptions
 const events = ref([
   {
     key: 'event-1',
-    highlight: {
-      color: 'blue',
-      fillMode: 'light',
-    },
     dates: [
       [new Date(2025, 2, 7), new Date(2025, 2, 9)],
     ],
@@ -37,33 +36,55 @@ const events = ref([
   },
   {
     key: 'event-2',
-    highlight: {
-      color: 'blue',
-      fillMode: 'solid',
-    },
     dates: [dayjs().toDate()],
     customData: { description: 'User 2: Vacation' },
   },
   {
     key: 'event-3',
-    highlight: {
-      color: 'red',
-      fillMode: 'outline',
-    },
     dates: [dayjs().add(3, 'day').toDate()],
     customData: { description: 'User 3 Sick leave' },
-  }
+  },
+  {
+    key: 'event-4',
+    dates: [dayjs().toDate()],
+    customData: { description: 'User 2: Vacation' },
+  },
 ]);
 
 const filteredAttributes = (day: any, attributes: any) => {
-  return attributes.filter((attr: any) => {
+  return attributes.map((attr: any) => {
     if (Array.isArray(attr.dates)) {
       const firstDay = Array.isArray(attr.dates[0]) ? attr.dates[0][0] : attr.dates[0];
-      return dayjs(day.date).isSame(firstDay, 'day');
+      return {
+        ...attr,
+        customData: {
+          ...attr.customData,
+          description: dayjs(day.date).isSame(firstDay, 'day') ? attr.customData?.description : 'NA',
+        },
+        // TODO: Find a way to render div without no content
+        styles: dayjs(day.date).isSame(firstDay, 'day') ? null : '!text-blue-200'
+      };
     }
-    return true;
-  });
+    return attr;
+  })
 };
+
+// const fetchEvents = async () => {
+//   try {
+//     loadingEvents.value = true
+//     const response = await getRequest('events')
+//     events.value = z.array(EventSchema).parse(response.data)
+//   } catch (err) {
+//     console.error('Failed to fetch events:', err)
+//   } finally {
+//     loadingEvents.value = false
+//   }
+// }
+//
+// onMounted(() => {
+//   fetchEvents()
+// })
+
 </script>
 
 <style scoped>
