@@ -5,8 +5,8 @@ export const EventSchema = z.object({
   first_name: z.string(),
   last_name: z.string(),
   email: z.string(),
-  from: z.date(),
-  to: z.date(),
+  from: z.string(),
+  to: z.string(),
   reason: z.string(),
   status: z.string()
 })
