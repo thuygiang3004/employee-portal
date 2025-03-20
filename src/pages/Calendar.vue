@@ -22,24 +22,12 @@ import dayjs from 'dayjs';
 import {getRequest} from "@/services/httpServices.ts";
 import {EventSchema} from "@/types/event.ts";
 import {z} from "zod";
+import {transformEvents} from "@/ultilities/calendarHelpers.ts";
 
 const date = ref(new Date());
 const loadingEvents = ref(false)
 
 const events = ref<any[]>([])
-
-
-const transformEvents = (dataEvents: any) => {
-  events.value = dataEvents.map((item: any) => {
-    return {
-      key: `event-${item.id}`,
-      dates: [[dayjs(item.from), dayjs(item.to)]],
-      customData: {
-        description: `${item.first_name} ${item.last_name}: ${item.reason}`,
-      },
-    };
-  });
-};
 
 // Sample events with descriptions
 // const events = ref([
@@ -68,7 +56,7 @@ const transformEvents = (dataEvents: any) => {
 // ]);
 
 const filteredAttributes = (day: any, attributes: any) => {
-  const taco: any[] = attributes.map((attr: any) => {
+  const attributesWithDesc: any[] = attributes.map((attr: any) => {
     if (Array.isArray(attr.dates)) {
       const firstDay = Array.isArray(attr.dates[0]) ? attr.dates[0][0] : attr.dates[0];
       return {
@@ -85,14 +73,16 @@ const filteredAttributes = (day: any, attributes: any) => {
 
     return attr;
   })
-  return taco.filter((item: any) => item.key !== 'select-drag')
+  return attributesWithDesc.filter((item: any) => {
+    return item.key !== 'select-drag'
+  })
 };
 
 const fetchEvents = async () => {
   try {
     loadingEvents.value = true
     const response = await getRequest('requests')
-    transformEvents(z.array(EventSchema).parse(response.data))
+    events.value = transformEvents(z.array(EventSchema).parse(response.data))
   } catch (err) {
     console.error('Failed to fetch events:', err)
   } finally {
@@ -107,7 +97,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  .my-calendar :deep(.vc-week) {
-    margin-bottom: 6rem;
-  }
+.my-calendar :deep(.vc-week) {
+  margin-bottom: 6rem;
+}
 </style>
