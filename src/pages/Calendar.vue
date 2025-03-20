@@ -1,6 +1,6 @@
 <template>
   <div class="my-calendar">
-    <DatePicker v-model="date" :attributes="events" expanded>
+    <DatePicker :attributes="events" expanded>
       <template #day-content="{ day, attributes }">
         <div class="flex flex-col items-center gap-1">
           <div class="text-sm font-medium mb-2">{{ day.day }}</div>
@@ -24,7 +24,6 @@ import {EventSchema} from "@/types/event.ts";
 import {z} from "zod";
 import {transformEvents} from "@/ultilities/calendarHelpers.ts";
 
-const date = ref(new Date());
 const loadingEvents = ref(false)
 
 const events = ref<any[]>([])
