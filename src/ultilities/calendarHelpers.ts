@@ -41,7 +41,7 @@ export const transformEvents = (dataEvents: any) => {
                 key: `event-${item.id}-${currentStart.format('YYYYMMDD')}`,
                 dates: [[currentStart.toDate(), currentEnd.toDate()]],
                 customData: {
-                    description: `${item.first_name} ${item.last_name}: ${item.reason}`,
+                    description: `${item.first_name} ${item.last_name}: ${item.reason}`.substring(0, 40),
                 },
             });
 
@@ -52,5 +52,5 @@ export const transformEvents = (dataEvents: any) => {
         }
     });
 
-    return transformed;
+    return transformed.sort((a: any, b: any) => a.dates.length - b.dates.length );
 };
