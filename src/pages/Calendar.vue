@@ -6,12 +6,17 @@
         class="w-full"
     >
       <template #day-content="{ day, attributes }">
-        <div class="flex flex-col items-center gap-1">
+        <div class="grid grid-cols-1 gap-1 relative justify-items-center" style="grid-template-rows: auto repeat(4, minmax(1.5rem, auto));">
           <div class="text-sm font-medium mb-2">{{ day.day }}</div>
-          <div v-for="attr in filteredAttributes(day, attributes)" :key="attr.key"
-               class="text-xs text-blue-600 whitespace-nowrap w-full bg-blue-200 h-6" :class="attr.styles">
-            {{ attr.customData?.description }}
-          </div>
+          <template v-for="(attr, index) in filteredAttributes(day, attributes)" :key="attr.key">
+            <div 
+              :style="`grid-row: ${attr.customData?.rowIndex + 2}`"
+              class="text-xs text-blue-600 whitespace-nowrap w-full bg-blue-200 h-6" 
+              :class="attr.styles"
+            >
+              {{ attr.customData?.description }}
+            </div>
+          </template>
         </div>
       </template>
     </DatePicker>
@@ -58,28 +63,37 @@ const events = ref<any[]>([])
 //   },
 // ]);
 
+// Create a map to track row positions for events
+const eventRows = new Map();
+let currentRow = 0;
 const filteredAttributes = (day: any, attributes: any) => {
   const attributesWithDesc: any[] = attributes.map((attr: any) => {
-    console.log(attributes)
     if (Array.isArray(attr.dates)) {
       const firstDay = Array.isArray(attr.dates[0]) ? attr.dates[0][0] : attr.dates[0];
       const lastDay = Array.isArray(attr.dates[attr.dates.length-1]) ? attr.dates[attr.dates.length-1][attr.dates[attr.dates.length-1].length - 1] : attr.dates[0];
 
+      // Assign row index if not already assigned
+      if (!eventRows.has(attr.key)) {
+        eventRows.set(attr.key, currentRow++);
+      }
+
       let styles = dayjs(day.date).isSame(firstDay, 'day') ? 'rounded-l-lg' : ''
       styles += dayjs(day.date).isSame(lastDay, 'day') ? ' rounded-r-lg' : ''
+      
       return {
         ...attr,
         highlight: false,
         customData: {
           ...attr.customData,
           description: dayjs(day.date).isSame(firstDay, 'day') ? attr.customData?.description : null,
+          rowIndex: eventRows.get(attr.key), // Add row index to customData
         },
         styles: styles,
       };
     }
-
     return attr;
   })
+  console.log(attributesWithDesc)
   return attributesWithDesc.filter((item: any) => {
     return item.key !== 'select-drag'
   })
@@ -112,9 +126,5 @@ onMounted(() => {
 .my-calendar :deep(.vc-pane-container) {
   width: 100% !important;
   max-width: 100% !important;
-}
-
-.my-calendar :deep(.vc-week) {
-  margin-bottom: 6rem;
 }
 </style>
