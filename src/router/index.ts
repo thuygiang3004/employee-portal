@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import NewRequest from '../pages/NewRequest.vue'
 import Login from "@/pages/Login.vue";
 import Calendar from "@/pages/Calendar.vue";
+import ScheduleXCalendar from "@/pages/ScheduleXCalendar.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -23,6 +24,10 @@ const router = createRouter({
     {
       path: '/calendar',
       component: Calendar
+    },
+    {
+      path: '/calendar-x',
+      component: ScheduleXCalendar
     }
   ]
 })
