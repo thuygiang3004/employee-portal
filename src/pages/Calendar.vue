@@ -5,6 +5,7 @@
         expanded
         class="w-full"
     >
+<!--      TODO: Show next month and last month of the shared weeks-->
       <template #day-content="{ day, attributes }">
         <div class="grid grid-cols-1 gap-1 relative justify-items-center" style="grid-template-rows: auto repeat(4, minmax(1.5rem, auto));">
           <div class="text-sm font-medium mb-2">{{ day.day }}</div>
