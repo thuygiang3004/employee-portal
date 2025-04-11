@@ -1,142 +1,122 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md mx-auto">
-      <div class="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
-        <h2 class="mb-6 text-2xl font-bold text-gray-900">New Leave Request</h2>
-
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <div>
-            <label for="from" class="block text-sm font-medium text-gray-700">From</label>
-            <input
-                type="datetime-local"
-                id="from"
-                v-model="formData.from"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-          </div>
-
-          <div>
-            <label for="to" class="block text-sm font-medium text-gray-700">To</label>
-            <input
-                type="datetime-local"
-                id="to"
-                v-model="formData.to"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-          </div>
-
-          <div>
-            <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>
-            <textarea
-                id="reason"
-                v-model="formData.reason"
-                rows="3"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Please provide a reason for your leave request..."
-            ></textarea>
-          </div>
-
-          <div>
-            <label for="manager" class="block text-sm font-medium text-gray-700">Manager</label>
-            <select
-                id="manager"
-                v-model="formData.managerId"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-              <option value="">Select a manager</option>
-              <option
-                  v-for="manager in managers"
-                  :key="manager.id"
-                  :value="manager.id"
-              >
-                {{ manager.first_name }} {{ manager.last_name }}
-              </option>
-            </select>
-          </div>
-
-          <div class="flex items-center justify-end space-x-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-white shadow rounded-lg">
+        <!-- Tabs -->
+        <div class="border-b border-gray-200">
+          <nav class="-mb-px flex">
             <button
-                type="button"
-                class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                v-for="tab in tabs"
+                :key="tab.name"
+                @click="currentTab = tab.name"
+                :class="[
+                currentTab === tab.name
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                'whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm'
+              ]"
             >
-              Cancel
+              {{ tab.label }}
             </button>
-            <button
-                type="submit"
-                class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Submit Request
-            </button>
+          </nav>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+          <!-- Loading state -->
+          <div v-if="loading" class="text-center py-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
           </div>
 
-          <p v-if="error" class="mt-2 text-sm text-red-600">{{ error }}</p>
-          <p v-if="message" class="mt-2 text-sm text-green-900">{{ message }}</p>
-        </form>
+          <!-- Error state -->
+          <div v-else-if="error" class="text-center py-4 text-red-600">
+            {{ error }}
+          </div>
+
+          <!-- Requests list -->
+          <div v-else class="space-y-4">
+            <div v-if="currentRequests.length === 0" class="text-center py-4 text-gray-500">
+              No requests found
+            </div>
+            <div v-else class="space-y-4">
+              <div v-for="request in currentRequests" :key="request.id"
+                   class="border rounded-lg p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h3 class="text-lg font-medium text-gray-900">
+                      {{ request.first_name }} {{ request.last_name }}
+                    </h3>
+                    <p class="text-sm text-gray-500">{{ request.email }}</p>
+                  </div>
+                  <span :class="[
+                    'px-2 py-1 text-xs font-medium rounded-full',
+                    request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    request.status === 'approved' ? 'bg-green-100 text-green-800' :
+                    'bg-red-100 text-red-800'
+                  ]">
+                    {{ request.status }}
+                  </span>
+                </div>
+                <div class="mt-2 text-sm text-gray-600">
+                  <p><span class="font-medium">From:</span> {{ formatDate(request.from) }}</p>
+                  <p><span class="font-medium">To:</span> {{ formatDate(request.to) }}</p>
+                  <p class="mt-2"><span class="font-medium">Reason:</span> {{ request.reason }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
-import {z} from 'zod'
-import {type Manager, ManagerSchema} from '../types/manager'
-import {useRouter} from "vue-router";
-import {getRequest, postRequest} from "@/services/httpServices.ts";
-import dayjs from "dayjs";
+import {computed, onMounted, ref} from 'vue'
+import {type Event} from '../types/event'
+import {getRequest} from '@/services/httpServices'
+import dayjs from 'dayjs'
 
-const tomorrow = dayjs().add(1, 'day').startOf('day')
+const tabs = [
+  {name: 'my-requests', label: 'My Requests'},
+  {name: 'received-requests', label: 'Received Requests'},
+]
 
-const defaultFormValue = {
-  from: tomorrow.hour(9).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
-  to: tomorrow.hour(17).minute(0).second(0).format('YYYY-MM-DDTHH:mm'),
-  reason: '',
-  managerId: '',
-};
+const currentTab = ref('my-requests')
+const loading = ref(true)
+const error = ref('')
+const myRequests = ref<Event[]>([])
+const receivedRequests = ref<Event[]>([])
 
-const router = useRouter()
+const currentRequests = computed(() => {
+  return currentTab.value === 'my-requests' ? myRequests.value : receivedRequests.value
+})
 
-const error = ref('');
-const message = ref('');
-const isSubmitting = ref(false)
-const managers = ref<Manager[]>([])
-const loadingManagers = ref(false)
+const formatDate = (dateString: string) => {
+  return dayjs(dateString).format('MMM D, YYYY HH:mm')
+}
 
-const formData = ref({...defaultFormValue})
-
-const fetchManagers = async () => {
+const fetchRequests = async () => {
   try {
-    loadingManagers.value = true
-    const response = await getRequest('managers')
-    managers.value = z.array(ManagerSchema).parse(response.data)
+    loading.value = true
+    error.value = ''
+
+    const myRequestsResponse = await getRequest('requests?myRequests=1')
+    const receivedRequestsResponse = await getRequest('requests?toMe=1')
+
+    myRequests.value = myRequestsResponse.data
+    receivedRequests.value = receivedRequestsResponse.data
   } catch (err) {
-    console.error('Failed to fetch managers:', err)
+    console.error('Failed to fetch requests:', err)
+    error.value = 'Failed to load requests. Please try again later.'
   } finally {
-    loadingManagers.value = false
+    loading.value = false
   }
 }
 
 onMounted(() => {
-  console.log((new Date()).toISOString())
-  fetchManagers()
+  fetchRequests()
 })
-
-const handleSubmit = async () => {
-  console.log(formData.value)
-  isSubmitting.value = true
-  const response = await postRequest('requests/create', {...formData.value})
-
-  if (response.status == 201) {
-    formData.value = {...defaultFormValue}
-    message.value = response.data.message
-    // TODO: Update to go to dashboard
-    // router.push('/calendar')
-  }
-}
 </script>
 
 <style scoped>
