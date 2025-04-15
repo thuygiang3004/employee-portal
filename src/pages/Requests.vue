@@ -50,12 +50,23 @@
                   </div>
                   <span :class="[
                     'px-2 py-1 text-xs font-medium rounded-full',
-                    request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    request.status === 'pending_approval' ? 'bg-yellow-100 text-yellow-800' :
                     request.status === 'approved' ? 'bg-green-100 text-green-800' :
                     'bg-red-100 text-red-800'
                   ]">
-                    {{ request.status }}
+                    {{ _.startCase(request.status) }}
                   </span>
+                  <div v-if="currentTab === 'received-requests' && request.status === 'pending_approval'"
+                       class="flex gap-3">
+                    <button class="bg-green-800 text-white rounded-2xl px-3 hover:bg-green-600"
+                            @click="handleApprove(request.id)"
+                    >
+                      Approve
+                    </button>
+                    <button class="bg-red-800 text-white rounded-2xl px-3 hover:bg-red-600"
+                            @click="handleReject(request.id)"
+                    >Reject</button>
+                  </div>
                 </div>
                 <div class="mt-2 text-sm text-gray-600">
                   <p><span class="font-medium">From:</span> {{ formatDate(request.from) }}</p>
@@ -74,8 +85,9 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
 import {type Event} from '../types/event'
-import {getRequest} from '@/services/httpServices'
+import {getRequest, postRequest} from '@/services/httpServices'
 import dayjs from 'dayjs'
+import _ from 'lodash'
 
 const tabs = [
   {name: 'my-requests', label: 'My Requests'},
@@ -101,14 +113,62 @@ const fetchRequests = async () => {
     loading.value = true
     error.value = ''
 
-    const myRequestsResponse = await getRequest('requests?myRequests=1')
-    const receivedRequestsResponse = await getRequest('requests?toMe=1')
-
-    myRequests.value = myRequestsResponse.data
-    receivedRequests.value = receivedRequestsResponse.data
+    await fetchReceivedRequests()
+    await fetchMyRequests()
   } catch (err) {
     console.error('Failed to fetch requests:', err)
     error.value = 'Failed to load requests. Please try again later.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchReceivedRequests = async () => {
+  const receivedRequestsResponse = await getRequest('requests?toMe=1')
+  receivedRequests.value = receivedRequestsResponse.data
+}
+
+const fetchMyRequests = async () => {
+  const myRequestsResponse = await getRequest('requests?myRequests=1')
+  myRequests.value = myRequestsResponse.data
+}
+
+const handleApprove = async (id: number) => {
+  try {
+    loading.value = true
+    error.value = ''
+
+    const myRequestsResponse = await postRequest(`requests/approve/${id}`, {})
+
+    if (myRequestsResponse.status === 201) {
+      const receivedRequestsResponse = await getRequest('requests?toMe=1')
+      receivedRequests.value = receivedRequestsResponse.data
+      // TODO: Show toast message
+    }
+  } catch (err) {
+    // TODO: Show toast message
+    error.value = 'Failed to approve the request. Please try again later.'
+  } finally {
+    loading.value = false
+  }
+
+}
+
+const handleReject = async (id: number) => {
+  try {
+    loading.value = true
+    error.value = ''
+
+    const myRequestsResponse = await postRequest(`requests/reject/${id}`, {})
+
+    if (myRequestsResponse.status === 201) {
+      const receivedRequestsResponse = await getRequest('requests?toMe=1')
+      receivedRequests.value = receivedRequestsResponse.data
+      // TODO: Show toast message
+    }
+  } catch (err) {
+    // TODO: Show toast message
+    error.value = 'Failed to reject the request. Please try again later.'
   } finally {
     loading.value = false
   }
