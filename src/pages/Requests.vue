@@ -7,6 +7,7 @@
           <nav class="-mb-px flex">
             <button
                 v-for="tab in tabs"
+                :id="tab.name"
                 :key="tab.name"
                 @click="currentTab = tab.name"
                 :class="[
