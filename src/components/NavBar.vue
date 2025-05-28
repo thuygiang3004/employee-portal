@@ -17,10 +17,32 @@
         Create New Request
       </RouterLink>
     </div>
+    <div
+        class="ml-auto mr-4 rounded-md px-3 py-2 text-sm underline cursor-pointer font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        @click="handleLogout"
+    >
+      Log out
+    </div>
   </div>
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Logo from "@/components/Logo.vue";
+import {postRequest} from "@/services/httpServices.js";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+const handleLogout = async () => {
+  try {
+    await postRequest('users/logout')
+    localStorage.removeItem('email')
+    localStorage.removeItem('token')
+    localStorage.removeItem('userName')
+
+    router.push('/login')
+  } catch (error: any) {
+    console.log(error)
+  }
+}
 </script>

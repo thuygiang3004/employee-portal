@@ -20,7 +20,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/new-request'
+      redirect: '/calendar-x'
     },
     {
       path: '/calendar',
