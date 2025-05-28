@@ -8,7 +8,8 @@ const getRequest = async (url: string): Promise<AxiosResponse<any, any>> => {
     });
 }
 
-const postRequest = async (url: string, data: {}, withAuth: true): Promise<AxiosResponse<any, any>> => {
+const postRequest = async (url: string, data: {}, withAuth: undefined|null = true): Promise<AxiosResponse<any, any>> => {
+    console.log('withAuth', withAuth)
     return await axios.post(
         `${baseURL}${url}`,
         data,
