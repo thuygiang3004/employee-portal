@@ -94,7 +94,7 @@ const onSubmit = async () => {
 
   isSubmitting.value = true;
   try {
-    const response = await postRequest('users/login', form.value)
+    const response = await postRequest('users/login', form.value, false)
     localStorage.setItem('email', response.data.email)
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('userName', response.data.name)

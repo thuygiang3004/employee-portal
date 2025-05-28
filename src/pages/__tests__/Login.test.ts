@@ -46,7 +46,7 @@ describe('LoginForm', () => {
 
         await wrapper.find('form').trigger('submit');
 
-        expect(axios.post).toHaveBeenCalledWith('http://127.0.0.1:8000/api/users/login', {
+        expect(axios.post).toHaveBeenCalledWith('http://localhost/api/users/login', {
             email: 'test@example.com',
             password: 'password123',
         });
