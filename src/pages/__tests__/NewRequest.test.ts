@@ -1,17 +1,14 @@
 import {describe, expect, it, vi} from 'vitest'
 import {flushPromises, mount} from '@vue/test-utils'
 import NewRequest from '../NewRequest.vue'
-import {postRequest} from "@/services/httpServices.ts";
 
-vi.mock('@/services/httpServices.ts', () => ({
+vi.mock('@/services/httpServices.ts',  async () => ({
+    ...(await vi.importActual('@/services/httpServices.ts')),
     getRequest: vi.fn().mockReturnValue({
         data: [
             {id: 1, first_name: 'John', last_name: 'Doe'},
             {id: 2, first_name: 'Jane', last_name: 'Smith'},
         ],
-    }),
-    postRequest: vi.fn().mockReturnValue({
-        status: 200,
     })
 }))
 
