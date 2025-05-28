@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
     postRequest: vi.fn().mockReturnValue({status: 200}),
 }))
 
-    vi.mock('@/services/httpServices.ts',  async () => ({
+vi.mock('@/services/httpServices.ts',  async () => ({
     ...(await vi.importActual('@/services/httpServices.ts')),
     getRequest: vi.fn().mockReturnValue({
         data: [

@@ -11,4 +11,17 @@ vi.stubGlobal('crypto', crypto)
 config.global.stubs = {
   'router-view': true,
   'router-link': true
-} 
+}
+
+// Mock the router
+const mockRouter = {
+  push: vi.fn(),
+  replace: vi.fn(),
+  go: vi.fn(),
+  back: vi.fn(),
+  forward: vi.fn(),
+}
+
+vi.mock('vue-router', () => ({
+  useRouter: () => mockRouter,
+}))
