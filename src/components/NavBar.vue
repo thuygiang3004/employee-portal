@@ -29,17 +29,15 @@
 
 <script setup lang="ts">
 import Logo from "@/components/Logo.vue";
-import {postRequest} from "@/services/httpServices.js";
 import {useRouter} from "vue-router";
+import {useAuthStore} from "@/stores/auth.ts";
 
 const router = useRouter();
+
+const {logout} = useAuthStore();
 const handleLogout = async () => {
   try {
-    await postRequest('users/logout')
-    localStorage.removeItem('email')
-    localStorage.removeItem('token')
-    localStorage.removeItem('userName')
-
+    await logout();
     router.push('/login')
   } catch (error: any) {
     console.log(error)

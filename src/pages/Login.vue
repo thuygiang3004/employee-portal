@@ -57,7 +57,7 @@
 import {ref} from "vue";
 import {z} from "zod";
 import {useRouter} from "vue-router";
-import {postRequest} from "@/services/httpServices.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 
 const router = useRouter();
 
@@ -78,6 +78,9 @@ const isSubmitting = ref(false);
 const errorMessage = ref<string | null>(null);
 const errors = ref<{ email?: string; password?: string }>({});
 
+
+const {login} = useAuthStore();
+
 // Handle form submission
 const onSubmit = async () => {
   errors.value = {}; // Clear previous errors
@@ -94,12 +97,8 @@ const onSubmit = async () => {
 
   isSubmitting.value = true;
   try {
-    const response = await postRequest('users/login', form.value, false)
-    localStorage.setItem('email', response.data.email)
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('userName', response.data.name)
-
-    router.push('/new-request')
+    await login(form.value)
+    router.push('/calendar-x')
   } catch (error: any) {
     console.log(error)
     errorMessage.value = error.response?.data?.message || "Login failed. Please try again.";

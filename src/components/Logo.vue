@@ -8,7 +8,7 @@
   </svg>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   iconColor: {
     type: String,
